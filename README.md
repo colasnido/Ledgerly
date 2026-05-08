@@ -46,7 +46,7 @@ No signup. No cloud. No telemetry.
 > Add screenshots of your dashboard, import-review, and reports pages here once you've run the app and captured them. Suggested layout:
 >
 > ```
-> docs/screenshots/dashboard.png
+> ![dashboard](dashboard.png) 
 > ```
 
 ## Quick start
