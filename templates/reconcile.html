@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Reconcile{% endblock %}
+{% block content %}
+<h1>Reconciliation</h1>
+
+<div class="tabs">
+  <a href="{{ url_for('reconcile_page', show='unreconciled') }}" class="{{ 'active' if show == 'unreconciled' }}">Unreconciled</a>
+  <a href="{{ url_for('reconcile_page', show='reconciled') }}" class="{{ 'active' if show == 'reconciled' }}">Reconciled</a>
+  <a href="{{ url_for('reconcile_page', show='all') }}" class="{{ 'active' if show == 'all' }}">All</a>
+</div>
+
+<p class="muted">Check off transactions that match your bank statement, then mark them as cleared.</p>
+
+<form method="post">
+  <table>
+    <thead>
+      <tr><th></th><th>Date</th><th>Description</th><th class="num">Amount</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for t in transactions %}
+      <tr>
+        <td><input type="checkbox" name="reconcile" value="{{ t.id }}" /></td>
+        <td>{{ t.date }}</td>
+        <td><a href="{{ url_for('transaction_detail', tx_id=t.id) }}">{{ t.description }}</a></td>
+        <td class="num">{{ t.total | money }}</td>
+        <td>{% if t.reconciled %}<span class="pill ok">Reconciled</span>{% else %}<span class="pill">Open</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div style="margin-top:1rem">
+    <button type="submit" name="action" value="mark_cleared">Mark selected as reconciled</button>
+    <button type="submit" name="action" value="mark_open">Mark selected as open</button>
+  </div>
+</form>
+{% endblock %}

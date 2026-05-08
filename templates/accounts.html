@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Chart of Accounts{% endblock %}
+{% block content %}
+<h1>Chart of Accounts</h1>
+
+<table>
+  <thead><tr><th>Code</th><th>Name</th><th>Type</th><th>Normal balance</th></tr></thead>
+  <tbody>
+  {% for a in accounts %}
+    <tr>
+      <td>{{ a.code }}</td>
+      <td>{{ a.name }}</td>
+      <td>{{ a.type }}</td>
+      <td>{{ a.normal_balance }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Add account</h2>
+<form method="post" action="{{ url_for('accounts_new') }}" class="stack">
+  <label>Code <input name="code" required maxlength="20" /></label>
+  <label>Name <input name="name" required maxlength="100" /></label>
+  <label>Type
+    <select name="type" required>
+      <option value="Asset">Asset</option>
+      <option value="Liability">Liability</option>
+      <option value="Equity">Equity</option>
+      <option value="Income">Income</option>
+      <option value="Expense">Expense</option>
+    </select>
+  </label>
+  <label>Normal balance
+    <select name="normal_balance" required>
+      <option value="debit">debit</option>
+      <option value="credit">credit</option>
+    </select>
+  </label>
+  <button type="submit">Add account</button>
+</form>
+{% endblock %}

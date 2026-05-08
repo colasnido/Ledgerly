@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Import CSV{% endblock %}
+{% block content %}
+<h1>Import bank statement (CSV)</h1>
+
+<p class="muted">
+  Upload a CSV from your bank. The app will parse it, then ask Claude to suggest
+  a chart-of-accounts category for each transaction. You'll review and confirm before posting.
+</p>
+
+<form method="post" enctype="multipart/form-data" class="stack">
+  <label>Bank account this CSV is for
+    <select name="bank_account_id" required>
+      <option value="">— choose —</option>
+      {% for a in bank_accts %}
+        <option value="{{ a.id }}">{{ a.code }} — {{ a.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>CSV file <input type="file" name="file" accept=".csv" required /></label>
+  <button type="submit">Upload &amp; preview</button>
+</form>
+
+<details class="muted" style="margin-top:1.5rem">
+  <summary>What CSV columns are recognized?</summary>
+  <ul>
+    <li><strong>Date</strong>: any of <code>date</code>, <code>transaction date</code>, <code>posted date</code></li>
+    <li><strong>Description</strong>: any of <code>description</code>, <code>memo</code>, <code>details</code>, <code>payee</code></li>
+    <li><strong>Amount</strong>: <code>amount</code> column (positive = deposit, negative = withdrawal),
+        OR a <code>debit</code> + <code>credit</code> column pair</li>
+  </ul>
+</details>
+{% endblock %}

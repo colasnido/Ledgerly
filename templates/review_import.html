@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Review imported transactions{% endblock %}
+{% block content %}
+<h1>Review &amp; post — batch <code>{{ batch_id }}</code></h1>
+
+<p class="muted">
+  Claude has suggested a category for each row. Override anything that's wrong, or check "skip" to leave a row unposted.
+  Click <strong>Post selected</strong> at the bottom to commit them as double-entry transactions.
+</p>
+
+<form method="post" action="{{ url_for('post_import', batch_id=batch_id) }}">
+  <input type="hidden" name="bank_account_id" value="{{ bank_account_id }}" />
+  <table class="wide">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Description</th>
+        <th class="num">Amount</th>
+        <th>Category (account)</th>
+        <th>Why</th>
+        <th>Skip</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.date }}</td>
+        <td>{{ r.description }}</td>
+        <td class="num {% if r.amount < 0 %}neg{% else %}pos{% endif %}">{{ r.amount | money }}</td>
+        <td>
+          <select name="account_{{ r.id }}">
+            <option value="">— pick —</option>
+            {% for a in accounts %}
+              <option value="{{ a.id }}" {% if a.id == r.suggested_account_id %}selected{% endif %}>
+                {{ a.code }} — {{ a.name }} ({{ a.type }})
+              </option>
+            {% endfor %}
+          </select>
+        </td>
+        <td class="muted small">{{ r.suggestion_reason or "" }}</td>
+        <td><input type="checkbox" name="skip_{{ r.id }}" value="1" /></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="margin-top:1rem">
+    <button type="submit">Post selected</button>
+    <a href="{{ url_for('import_csv') }}" class="btn-link">Cancel</a>
+  </div>
+</form>
+{% endblock %}

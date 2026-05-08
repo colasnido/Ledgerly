@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Transactions{% endblock %}
+{% block content %}
+<h1>Transactions</h1>
+
+<form method="get" class="inline-form">
+  <label>From <input type="date" name="start" value="{{ start }}" /></label>
+  <label>To <input type="date" name="end" value="{{ end }}" /></label>
+  <button type="submit">Filter</button>
+  <a href="{{ url_for('transactions_page') }}" class="btn-link">Clear</a>
+</form>
+
+{% if transactions %}
+<table>
+  <thead>
+    <tr><th>Date</th><th>Description</th><th class="num">Amount</th><th>Source</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    {% for t in transactions %}
+    <tr>
+      <td>{{ t.date }}</td>
+      <td><a href="{{ url_for('transaction_detail', tx_id=t.id) }}">{{ t.description }}</a></td>
+      <td class="num">{{ t.total | money }}</td>
+      <td>{{ t.source }}</td>
+      <td>{% if t.reconciled %}<span class="pill ok">R</span>{% else %}<span class="pill">—</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">No transactions match.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Income Statement{% endblock %}
+{% block content %}
+<form method="get" class="inline-form no-print">
+  <label>From <input type="date" name="start" value="{{ r.start_date }}" /></label>
+  <label>To <input type="date" name="end" value="{{ r.end_date }}" /></label>
+  <button type="submit">Run</button>
+  <button type="button" onclick="window.print()">Print / Save as PDF</button>
+</form>
+
+<div class="report">
+  <header class="report-header">
+    <h1>Income Statement</h1>
+    <p>For the period {{ r.start_date }} to {{ r.end_date }}</p>
+  </header>
+
+  <h2>Revenue</h2>
+  <table class="report-table">
+    {% for line in r.revenue_lines %}
+      <tr><td>{{ line.code }} — {{ line.name }}</td><td class="num">{{ line.amount | money }}</td></tr>
+    {% endfor %}
+    {% if not r.revenue_lines %}<tr><td colspan="2" class="muted">No revenue in this period.</td></tr>{% endif %}
+    <tr class="total"><td>Total Revenue</td><td class="num">{{ r.total_revenue | money }}</td></tr>
+  </table>
+
+  <h2>Expenses</h2>
+  <table class="report-table">
+    {% for line in r.expense_lines %}
+      <tr><td>{{ line.code }} — {{ line.name }}</td><td class="num">{{ line.amount | money }}</td></tr>
+    {% endfor %}
+    {% if not r.expense_lines %}<tr><td colspan="2" class="muted">No expenses in this period.</td></tr>{% endif %}
+    <tr class="total"><td>Total Expenses</td><td class="num">{{ r.total_expenses | money }}</td></tr>
+  </table>
+
+  <table class="report-table">
+    <tr class="grand-total">
+      <td>Net Income</td>
+      <td class="num">{{ r.net_income | money }}</td>
+    </tr>
+  </table>
+</div>
+{% endblock %}

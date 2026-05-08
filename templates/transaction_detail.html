@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Transaction #{{ tx.id }}{% endblock %}
+{% block content %}
+<h1>Transaction #{{ tx.id }}</h1>
+
+<dl class="meta">
+  <dt>Date</dt><dd>{{ tx.date }}</dd>
+  <dt>Description</dt><dd>{{ tx.description }}</dd>
+  <dt>Source</dt><dd>{{ tx.source }}</dd>
+  <dt>Reconciled</dt><dd>{{ "Yes" if tx.reconciled else "No" }}</dd>
+</dl>
+
+<h2>Ledger entries</h2>
+<table>
+  <thead><tr><th>Account</th><th class="num">Debit</th><th class="num">Credit</th><th>Memo</th></tr></thead>
+  <tbody>
+    {% set total_d = namespace(v=0) %}
+    {% set total_c = namespace(v=0) %}
+    {% for e in entries %}
+      <tr>
+        <td>{{ e.code }} — {{ e.account_name }}</td>
+        <td class="num">{% if e.debit %}{{ e.debit | money }}{% endif %}</td>
+        <td class="num">{% if e.credit %}{{ e.credit | money }}{% endif %}</td>
+        <td>{{ e.memo or "" }}</td>
+      </tr>
+      {% set total_d.v = total_d.v + e.debit %}
+      {% set total_c.v = total_c.v + e.credit %}
+    {% endfor %}
+    <tr class="total">
+      <td>Totals</td>
+      <td class="num">{{ total_d.v | money }}</td>
+      <td class="num">{{ total_c.v | money }}</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<form method="post" action="{{ url_for('transaction_delete', tx_id=tx.id) }}"
+      onsubmit="return confirm('Delete this transaction permanently?');" style="margin-top:1rem">
+  <button type="submit" class="danger">Delete transaction</button>
+  <a href="{{ url_for('transactions_page') }}" class="btn-link">Back</a>
+</form>
+{% endblock %}

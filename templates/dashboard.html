@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-head">
+      <span>Total transactions</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    </div>
+    <div class="card-num">{{ counts.transactions }}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span>Pending CSV imports</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    </div>
+    <div class="card-num">{{ counts.pending_imports }}</div>
+    {% if counts.pending_imports %}
+      <div class="card-foot"><a href="{{ url_for('import_csv') }}">Review imports →</a></div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span>Unreconciled</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    </div>
+    <div class="card-num">{{ counts.unreconciled }}</div>
+    {% if counts.unreconciled %}
+      <div class="card-foot"><a href="{{ url_for('reconcile_page') }}">Reconcile now →</a></div>
+    {% endif %}
+  </div>
+</div>
+
+<h2>Recent transactions</h2>
+{% if recent %}
+<table>
+  <thead><tr><th>Date</th><th>Description</th><th class="num">Amount</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for t in recent %}
+    <tr>
+      <td>{{ t.date }}</td>
+      <td><a href="{{ url_for('transaction_detail', tx_id=t.id) }}">{{ t.description }}</a></td>
+      <td class="num">{{ t.total_debit | money }}</td>
+      <td>{% if t.reconciled %}<span class="pill ok">Reconciled</span>{% else %}<span class="pill">Open</span>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">No transactions yet. <a href="{{ url_for('import_csv') }}">Import a bank statement</a> to get started.</p>
+{% endif %}
+{% endblock %}

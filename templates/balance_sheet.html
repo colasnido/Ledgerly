@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Balance Sheet{% endblock %}
+{% block content %}
+<form method="get" class="inline-form no-print">
+  <label>As of <input type="date" name="as_of" value="{{ r.as_of_date }}" /></label>
+  <button type="submit">Run</button>
+  <button type="button" onclick="window.print()">Print / Save as PDF</button>
+</form>
+
+<div class="report">
+  <header class="report-header">
+    <h1>Balance Sheet</h1>
+    <p>As of {{ r.as_of_date }}</p>
+  </header>
+
+  <h2>Assets</h2>
+  <table class="report-table">
+    {% for line in r.asset_lines %}
+      <tr><td>{{ line.code }} — {{ line.name }}</td><td class="num">{{ line.amount | money }}</td></tr>
+    {% endfor %}
+    {% if not r.asset_lines %}<tr><td colspan="2" class="muted">No asset balances.</td></tr>{% endif %}
+    <tr class="total"><td>Total Assets</td><td class="num">{{ r.total_assets | money }}</td></tr>
+  </table>
+
+  <h2>Liabilities</h2>
+  <table class="report-table">
+    {% for line in r.liability_lines %}
+      <tr><td>{{ line.code }} — {{ line.name }}</td><td class="num">{{ line.amount | money }}</td></tr>
+    {% endfor %}
+    {% if not r.liability_lines %}<tr><td colspan="2" class="muted">No liability balances.</td></tr>{% endif %}
+    <tr class="total"><td>Total Liabilities</td><td class="num">{{ r.total_liabilities | money }}</td></tr>
+  </table>
+
+  <h2>Equity</h2>
+  <table class="report-table">
+    {% for line in r.equity_lines %}
+      <tr><td>{{ line.code }} — {{ line.name }}</td><td class="num">{{ line.amount | money }}</td></tr>
+    {% endfor %}
+    {% if not r.equity_lines %}<tr><td colspan="2" class="muted">No equity balances.</td></tr>{% endif %}
+    <tr class="total"><td>Total Equity</td><td class="num">{{ r.total_equity | money }}</td></tr>
+  </table>
+
+  <table class="report-table">
+    <tr class="grand-total">
+      <td>Total Liabilities &amp; Equity</td>
+      <td class="num">{{ r.total_liab_and_equity | money }}</td>
+    </tr>
+  </table>
+
+  {% if not r.balanced %}
+    <p class="error" style="margin-top:1rem">
+      Warning: balance sheet does not balance. Difference: {{ (r.total_assets - r.total_liab_and_equity) | money }}.
+      Check for unbalanced journal entries.
+    </p>
+  {% endif %}
+</div>
+{% endblock %}
